@@ -1,68 +1,34 @@
-# Discord TypeScript Fortnite Skin Checker
+# Discord TypeScript Fortnite Skin Checker (single-file JS remake)
 
-Discord bot with Epic device-code login, cosmetic search, autocomplete equip picker, and locker preview rendering.
+Remade as **one JavaScript file**: `index.js`.
 
-## Features
-
-- Epic login with user-code flow:
-  - `/login` → returns user code + verification URL
-  - `/login-complete device-code:<value>` → finalizes login
-- Cosmetic search:
-  - `/cosmetic name:<text>`
-- Equip-style embed card with image thumbnail:
-  - `/equip name-or-id:<name-or-id>`
-  - `/ghost-equip name-or-id:<name-or-id>` (alias)
-- Locker image rendering:
-  - `/locker-preview skin:<id> [backbling:<id>] [pickaxe:<id>] [emote:<id>]`
-- Option list/autocomplete for equip and locker params (name lookup, value submitted as item ID).
-
-## Configuration
-
-Non-sensitive defaults are now defined in `src/config.ts`:
-
-- Discord client ID + guild ID
-- masked account metadata shown by `/account-info`
-- Fortnite cosmetics API URL
-- Epic account service base URL
-
-Runtime secrets are **not** hardcoded and must be provided as environment variables:
-
-- `DISCORD_TOKEN`
-- `EPIC_OAUTH_BASIC` (base64 of `client_id:client_secret`)
-
-Example run:
-
-```bash
-export DISCORD_TOKEN="<your-bot-token>"
-export EPIC_OAUTH_BASIC="<base64-client-id-colon-secret>"
-npm run dev
-```
-
-On Windows PowerShell:
-
-```powershell
-$env:DISCORD_TOKEN="<your-bot-token>"
-$env:EPIC_OAUTH_BASIC="<base64-client-id-colon-secret>"
-npm run dev
-```
-
-If you prefer, you can also create a local `.env` file with those two keys.
-
-## Setup
+## Run
 
 ```bash
 npm install
+export DISCORD_TOKEN="<your-discord-bot-token>"
+export EPIC_OAUTH_BASIC="<base64-client-id-colon-secret>"
+npm start
 ```
 
-## Register commands
+PowerShell:
+
+```powershell
+npm install
+$env:DISCORD_TOKEN="<your-discord-bot-token>"
+$env:EPIC_OAUTH_BASIC="<base64-client-id-colon-secret>"
+npm start
+```
+
+## Register slash commands
 
 ```bash
-export DISCORD_TOKEN="<your-bot-token>"
-npm run build
-node dist/registerCommands.js
+export DISCORD_TOKEN="<your-discord-bot-token>"
+npm run register
 ```
 
-## Important
+## Notes
 
-- `/equip` and `/ghost-equip` currently produce a "ghost equip" style response card and resolve cosmetic by **name or ID**.
-- This project does not include hidden/desync exploit packet manipulation; it is a bot-side cosmetic selection and preview workflow.
+- All bot logic is in `index.js` (commands, Epic auth flow, cosmetics cache/search, locker SVG rendering).
+- Non-sensitive defaults (client ID/guild ID/API URLs/account mask) are embedded in `index.js`.
+- Required runtime secrets remain env vars: `DISCORD_TOKEN`, `EPIC_OAUTH_BASIC`.
