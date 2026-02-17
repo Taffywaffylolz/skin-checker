@@ -38,6 +38,16 @@ export EPIC_OAUTH_BASIC="<base64-client-id-colon-secret>"
 npm run dev
 ```
 
+On Windows PowerShell:
+
+```powershell
+$env:DISCORD_TOKEN="<your-bot-token>"
+$env:EPIC_OAUTH_BASIC="<base64-client-id-colon-secret>"
+npm run dev
+```
+
+If you prefer, you can also create a local `.env` file with those two keys.
+
 ## Setup
 
 ```bash

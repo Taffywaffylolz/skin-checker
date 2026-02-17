@@ -14,8 +14,6 @@ import { buildLockerSvg } from "./render/lockerSvg.js";
 import { LockerSlot } from "./types.js";
 import { BOT_CONFIG, getDiscordToken } from "./config.js";
 
-const token = getDiscordToken();
-
 const cosmeticsService = new CosmeticsService();
 const epicAuthService = new EpicAuthService();
 
@@ -240,7 +238,21 @@ client.on("interactionCreate", (interaction) => {
   });
 });
 
-client.login(token).catch((error) => {
-  console.error(error);
-  process.exit(1);
-});
+function bootstrap(): void {
+  let token: string;
+  try {
+    token = getDiscordToken();
+  } catch (error) {
+    console.error("Missing DISCORD_TOKEN. Set it in your shell or a .env file before running.");
+    console.error(error);
+    process.exit(1);
+    return;
+  }
+
+  client.login(token).catch((error) => {
+    console.error(error);
+    process.exit(1);
+  });
+}
+
+bootstrap();

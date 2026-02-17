@@ -17,6 +17,9 @@ async function main(): Promise<void> {
 }
 
 main().catch((error) => {
+  if (error instanceof Error && error.message.includes("DISCORD_TOKEN")) {
+    console.error("Missing DISCORD_TOKEN. Set it in your shell or a .env file before registering commands.");
+  }
   console.error(error);
   process.exit(1);
 });
