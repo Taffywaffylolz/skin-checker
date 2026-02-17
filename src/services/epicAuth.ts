@@ -1,19 +1,13 @@
 import { EpicAccessToken, EpicDeviceAuthStart, EpicSession } from "../types.js";
+import { BOT_CONFIG, getEpicOAuthBasic } from "../config.js";
 
-const EPIC_ACCOUNT_BASE =
-  process.env.EPIC_ACCOUNT_BASE_URL ??
-  "https://account-public-service-prod.ol.epicgames.com";
+const EPIC_ACCOUNT_BASE = BOT_CONFIG.epicAccountBaseUrl;
 
 export class EpicAuthService {
   private readonly sessions = new Map<string, EpicSession>();
 
   private get basicAuth(): string {
-    const creds = process.env.EPIC_OAUTH_BASIC;
-    if (!creds) {
-      throw new Error("EPIC_OAUTH_BASIC is required (base64(clientId:clientSecret))");
-    }
-
-    return creds;
+    return getEpicOAuthBasic();
   }
 
   getSession(discordUserId: string): EpicSession | undefined {

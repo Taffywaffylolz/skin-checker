@@ -1,4 +1,5 @@
 import { Cosmetic, FortniteRarity } from "../types.js";
+import { BOT_CONFIG } from "../config.js";
 
 interface RawCosmetic {
   id: string;
@@ -16,8 +17,7 @@ interface RawCosmetic {
   };
 }
 
-const DEFAULT_API_URL =
-  process.env.COSMETICS_API_URL ?? "https://fortnite-api.com/v2/cosmetics/br";
+const DEFAULT_API_URL = BOT_CONFIG.cosmeticsApiUrl;
 
 const normalizeRarity = (value?: string): FortniteRarity => {
   const normalized = value?.toLowerCase();

@@ -16,34 +16,40 @@ Discord bot with Epic device-code login, cosmetic search, autocomplete equip pic
   - `/locker-preview skin:<id> [backbling:<id>] [pickaxe:<id>] [emote:<id>]`
 - Option list/autocomplete for equip and locker params (name lookup, value submitted as item ID).
 
+## Configuration
+
+Non-sensitive defaults are now defined in `src/config.ts`:
+
+- Discord client ID + guild ID
+- masked account metadata shown by `/account-info`
+- Fortnite cosmetics API URL
+- Epic account service base URL
+
+Runtime secrets are **not** hardcoded and must be provided as environment variables:
+
+- `DISCORD_TOKEN`
+- `EPIC_OAUTH_BASIC` (base64 of `client_id:client_secret`)
+
+Example run:
+
+```bash
+export DISCORD_TOKEN="<your-bot-token>"
+export EPIC_OAUTH_BASIC="<base64-client-id-colon-secret>"
+npm run dev
+```
+
 ## Setup
 
 ```bash
 npm install
-cp .env.example .env
 ```
-
-Set Discord and Epic OAuth values in `.env`.
-
-## Epic OAuth notes
-
-This build uses Epic account service device authorization endpoints inspired by the docs you linked.
-
-Required env:
-
-- `EPIC_OAUTH_BASIC`: base64 of `client_id:client_secret`
 
 ## Register commands
 
 ```bash
+export DISCORD_TOKEN="<your-bot-token>"
 npm run build
 node dist/registerCommands.js
-```
-
-## Run
-
-```bash
-npm run dev
 ```
 
 ## Important

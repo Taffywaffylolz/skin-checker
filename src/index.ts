@@ -12,11 +12,9 @@ import { CosmeticsService } from "./services/cosmetics.js";
 import { EpicAuthService } from "./services/epicAuth.js";
 import { buildLockerSvg } from "./render/lockerSvg.js";
 import { LockerSlot } from "./types.js";
+import { BOT_CONFIG, getDiscordToken } from "./config.js";
 
-const token = process.env.DISCORD_TOKEN;
-if (!token) {
-  throw new Error("DISCORD_TOKEN is required");
-}
+const token = getDiscordToken();
 
 const cosmeticsService = new CosmeticsService();
 const epicAuthService = new EpicAuthService();
@@ -196,12 +194,12 @@ async function handleChatCommand(interaction: ChatInputCommandInteraction): Prom
       .addFields(
         {
           name: "Display email",
-          value: process.env.ACCOUNT_EMAIL_MASKED ?? "not configured",
+          value: BOT_CONFIG.accountEmailMasked,
           inline: true
         },
         {
           name: "Region",
-          value: process.env.ACCOUNT_REGION ?? "not configured",
+          value: BOT_CONFIG.accountRegion,
           inline: true
         },
         {
