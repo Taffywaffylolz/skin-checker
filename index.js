@@ -10,6 +10,8 @@ import {
 } from "discord.js";
 
 const DISCORD_TOKEN_INLINE = ""; // Optional local fallback. Keep empty in git.
+// Epic user-code client token (Launcher client) used for device-code OAuth.
+const EPIC_USERCODE_BASIC = "MzRhMDJjZjhmNDQxNGUyOWIxNTkyMTg3NmRhMzZmOWE6ZGFhZmJjY2NiN2Y0Nzk4ZmE3YTRkZmE2NGY1ZjE3ODc=";
 
 const BOT_CONFIG = {
   discordClientId: "1473243732475117639",
@@ -27,15 +29,6 @@ const getDiscordToken = () => {
   }
 
   return token;
-};
-
-const getEpicOAuthBasic = () => {
-  const value = process.env.EPIC_OAUTH_BASIC;
-  if (!value) {
-    throw new Error("EPIC_OAUTH_BASIC is required in runtime environment");
-  }
-
-  return value;
 };
 
 const rarityColors = {
@@ -203,7 +196,7 @@ class EpicAuthService {
       {
         method: "POST",
         headers: {
-          Authorization: `basic ${getEpicOAuthBasic()}`,
+          Authorization: `basic ${EPIC_USERCODE_BASIC}`,
           "Content-Type": "application/x-www-form-urlencoded"
         },
         body: new URLSearchParams({ prompt: "login" })
@@ -229,7 +222,7 @@ class EpicAuthService {
     const response = await fetch(`${BOT_CONFIG.epicAccountBaseUrl}/account/api/oauth/token`, {
       method: "POST",
       headers: {
-        Authorization: `basic ${getEpicOAuthBasic()}`,
+        Authorization: `basic ${EPIC_USERCODE_BASIC}`,
         "Content-Type": "application/x-www-form-urlencoded"
       },
       body: new URLSearchParams({
@@ -586,9 +579,6 @@ if (mode === "register") {
   runBot().catch((error) => {
     if (error instanceof Error && error.message.includes("DISCORD_TOKEN")) {
       console.error("Missing DISCORD_TOKEN. Set it in your shell or a .env file before running.");
-    }
-    if (error instanceof Error && error.message.includes("EPIC_OAUTH_BASIC")) {
-      console.error("Missing EPIC_OAUTH_BASIC. Set Epic OAuth basic credentials (base64 clientId:clientSecret).");
     }
     console.error(error);
     process.exit(1);
