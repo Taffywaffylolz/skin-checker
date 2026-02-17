@@ -20,7 +20,11 @@ $env:EPIC_OAUTH_BASIC="<base64-client-id-colon-secret>"
 npm start
 ```
 
-## Register slash commands
+## Slash commands
+
+- The bot uses **Discord slash commands only** (e.g. `/login`, `/equip`, `/locker-preview`).
+- Slash commands are auto-synced on startup for the configured guild.
+- You can still force manual sync:
 
 ```bash
 export DISCORD_TOKEN="<your-discord-bot-token>"

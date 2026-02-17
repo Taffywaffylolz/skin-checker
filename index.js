@@ -341,6 +341,15 @@ async function registerCommands() {
   console.log(`Registered ${commandData.length} guild commands.`);
 }
 
+async function ensureSlashCommands(token) {
+  const rest = new REST({ version: "10" }).setToken(token);
+  await rest.put(
+    Routes.applicationGuildCommands(BOT_CONFIG.discordClientId, BOT_CONFIG.discordGuildId),
+    { body: commandData }
+  );
+  console.log(`Slash commands synced (${commandData.length}) for guild ${BOT_CONFIG.discordGuildId}.`);
+}
+
 async function runBot() {
   const token = getDiscordToken();
   const cosmeticsService = new CosmeticsService();
@@ -509,6 +518,7 @@ async function runBot() {
     }
   });
 
+  await ensureSlashCommands(token);
   await client.login(token);
 }
 
