@@ -38,3 +38,8 @@ npm run register
 - Required runtime secrets remain env vars: `DISCORD_TOKEN`, `EPIC_OAUTH_BASIC`.
 
 If you really want local hardcoded token fallback for quick testing, set `DISCORD_TOKEN_INLINE` in `index.js` on your machine only (do not commit real tokens).
+
+
+- `/account-info` now attempts to show live Epic profile fields (display name, account id, country, language, last login, and email when available) plus cosmetics catalog sync stats.
+
+If `/login` fails, make sure `EPIC_OAUTH_BASIC` is set correctly (base64 of `clientId:clientSecret`).

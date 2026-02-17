@@ -176,6 +176,10 @@ class CosmeticsService {
   getById(id) {
     return this.#cache.find((item) => item.id.toLowerCase() === id.toLowerCase());
   }
+
+  getTotalCached() {
+    return this.#cache.length;
+  }
 }
 
 class EpicAuthService {
@@ -246,6 +250,23 @@ class EpicAuthService {
       accountId: payload.account_id,
       displayName: payload.displayName
     };
+  }
+
+  async getAccountProfile(accessToken, accountId) {
+    const response = await fetch(
+      `${BOT_CONFIG.epicAccountBaseUrl}/account/api/public/account/${accountId}`,
+      {
+        headers: {
+          Authorization: `bearer ${accessToken}`
+        }
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error(`Account profile fetch failed (${response.status})`);
+    }
+
+    return response.json();
   }
 
   saveSession(discordUserId, token) {
@@ -355,12 +376,15 @@ async function runBot() {
   const cosmeticsService = new CosmeticsService();
   const epicAuthService = new EpicAuthService();
   const client = new Client({ intents: [GatewayIntentBits.Guilds] });
+  let cosmeticsSyncStatus = "not_started";
 
   client.once("ready", async () => {
     try {
       const total = await cosmeticsService.sync();
+      cosmeticsSyncStatus = "ok";
       console.log(`Logged in as ${client.user?.tag}. Cached ${total} cosmetics.`);
     } catch (error) {
+      cosmeticsSyncStatus = "failed";
       console.error("Cosmetics sync failed:", error);
       console.log(`Logged in as ${client.user?.tag} (without cosmetics cache).`);
     }
@@ -492,28 +516,58 @@ async function runBot() {
 
       if (interaction.commandName === "account-info") {
         const session = epicAuthService.getSession(interaction.user.id);
+
+        if (!session) {
+          await interaction.reply({
+            ephemeral: true,
+            embeds: [
+              new EmbedBuilder()
+                .setColor(0xf59e0b)
+                .setTitle("Account info")
+                .setDescription("Not logged in yet. Run `/login` then `/login-complete` first.")
+                .addFields(
+                  { name: "Cosmetics cached", value: String(cosmeticsService.getTotalCached()), inline: true },
+                  { name: "Cosmetics sync", value: cosmeticsSyncStatus, inline: true }
+                )
+            ]
+          });
+          return;
+        }
+
+        let profile = null;
+        try {
+          profile = await epicAuthService.getAccountProfile(session.accessToken, session.accountId);
+        } catch (error) {
+          console.error("Epic profile fetch failed:", error);
+        }
+
         await interaction.reply({
           embeds: [
             new EmbedBuilder()
               .setColor(0x22c55e)
-              .setTitle("Account info")
-              .setDescription("Only non-sensitive configured metadata is shown.")
+              .setTitle("Epic account info")
+              .setDescription("Live Epic account data + cosmetics catalog status.")
               .addFields(
-                { name: "Display email", value: BOT_CONFIG.accountEmailMasked, inline: true },
-                { name: "Region", value: BOT_CONFIG.accountRegion, inline: true },
-                {
-                  name: "Epic login",
-                  value: session ? `Logged in as ${session.displayName ?? session.accountId}` : "Not logged in"
-                }
+                { name: "Epic display name", value: profile?.displayName ?? session.displayName ?? "unknown", inline: true },
+                { name: "Account ID", value: `\`${session.accountId}\``, inline: false },
+                { name: "Country", value: profile?.country ?? "unknown", inline: true },
+                { name: "Preferred language", value: profile?.preferredLanguage ?? "unknown", inline: true },
+                { name: "Last login", value: profile?.lastLogin ?? "unknown", inline: false },
+                { name: "Email", value: profile?.email ?? "hidden / not returned by Epic", inline: false },
+                { name: "Cosmetics cached", value: String(cosmeticsService.getTotalCached()), inline: true },
+                { name: "Cosmetics sync", value: cosmeticsSyncStatus, inline: true },
+                { name: "Catalog source", value: BOT_CONFIG.cosmeticsApiUrl, inline: false }
               )
           ],
           ephemeral: true
         });
+        return;
       }
     } catch (error) {
       console.error("Command error:", error);
       if (interaction.isRepliable() && !interaction.replied && !interaction.deferred) {
-        await interaction.reply({ content: "Command failed. Check server logs.", ephemeral: true });
+        const message = error instanceof Error ? error.message.slice(0, 1800) : "Unknown command error";
+        await interaction.reply({ content: `Command failed: ${message}`, ephemeral: true });
       }
     }
   });
@@ -532,6 +586,9 @@ if (mode === "register") {
   runBot().catch((error) => {
     if (error instanceof Error && error.message.includes("DISCORD_TOKEN")) {
       console.error("Missing DISCORD_TOKEN. Set it in your shell or a .env file before running.");
+    }
+    if (error instanceof Error && error.message.includes("EPIC_OAUTH_BASIC")) {
+      console.error("Missing EPIC_OAUTH_BASIC. Set Epic OAuth basic credentials (base64 clientId:clientSecret).");
     }
     console.error(error);
     process.exit(1);
