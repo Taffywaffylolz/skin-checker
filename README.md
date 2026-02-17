@@ -32,3 +32,5 @@ npm run register
 - All bot logic is in `index.js` (commands, Epic auth flow, cosmetics cache/search, locker SVG rendering).
 - Non-sensitive defaults (client ID/guild ID/API URLs/account mask) are embedded in `index.js`.
 - Required runtime secrets remain env vars: `DISCORD_TOKEN`, `EPIC_OAUTH_BASIC`.
+
+If you really want local hardcoded token fallback for quick testing, set `DISCORD_TOKEN_INLINE` in `index.js` on your machine only (do not commit real tokens).

@@ -9,6 +9,8 @@ import {
   SlashCommandBuilder
 } from "discord.js";
 
+const DISCORD_TOKEN_INLINE = ""; // Optional local fallback. Keep empty in git.
+
 const BOT_CONFIG = {
   discordClientId: "1473243732475117639",
   discordGuildId: "1467584748263182409",
@@ -19,9 +21,9 @@ const BOT_CONFIG = {
 };
 
 const getDiscordToken = () => {
-  const token = process.env.DISCORD_TOKEN;
+  const token = process.env.DISCORD_TOKEN || DISCORD_TOKEN_INLINE;
   if (!token) {
-    throw new Error("DISCORD_TOKEN is required in runtime environment");
+    throw new Error("DISCORD_TOKEN is required in runtime environment (or set DISCORD_TOKEN_INLINE locally)");
   }
 
   return token;
