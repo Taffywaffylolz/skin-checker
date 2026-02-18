@@ -1,0 +1,15 @@
+{
+  "name": "skin-checker",
+  "version": "1.0.0",
+  "description": "Discord Fortnite cosmetics bot (single-file JS)",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "register": "node index.js register"
+  },
+  "dependencies": {
+    "discord.js": "^14.18.0",
+    "dotenv": "^16.4.5"
+  }
+}
